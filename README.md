@@ -43,5 +43,5 @@ Provided are two example files for the `geom` and `flow` parameters.  A working 
 include("ParticleTracing.jl")
 using .Tracing
 
-Tracing.runParticleTracing("cell.surfs", "flow.DAT", stats="stats.csv")
+Tracing.runParticleTracing("cell.surfs", "flow.DAT", stats="stats.csv", particleoutput="particles.out")
 ```
