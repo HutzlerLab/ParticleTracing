@@ -1,3 +1,3 @@
 include("ParticleTracing.jl")
 using .Tracing
-Tracing.runParticleTracing("geom.surfs", "flow.DAT", stats="stats.csv")
+Tracing.runParticleTracing("geom.surfs", "flow.DAT", stats="stats.csv", particlesoutput="particles.out")

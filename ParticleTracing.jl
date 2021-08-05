@@ -37,7 +37,6 @@ struct StatsArray
     zstep::Float64
 end
 
-
 @inline function StatsArray(minr, maxr, rbins, minz, maxz, zbins)
     stats = Array{TrajStats}(undef, rbins, zbins)
     for i in 1:rbins
@@ -129,6 +128,7 @@ args = Dict(
     "stats" => nothing,
     "exitstats" => nothing
 )
+
 # Set global constants
 MASS_PARTICLE = args["M"] # AMU
 MASS_BUFFER_GAS = args["m"] # AMU
@@ -136,6 +136,7 @@ MASS_REDUCED = MASS_PARTICLE * MASS_BUFFER_GAS /
     (MASS_PARTICLE + MASS_BUFFER_GAS) # AMU
 kB = 8314.46 # AMU m^2 / (s^2 K)
 σ_BUFFER_GAS_PARTICLE = args["sigma"] # m^2
+outputFile = stdout
 
 # Setup for rejection sampling of collision velocities
 
@@ -554,7 +555,7 @@ function SimulateParticles(
             merge!(boundstats, stats)
         end
         if print_stuff && (saveall != 0 || colltype == 2)
-            println(@sprintf("%d %e %e %e %e %e %e %e %e %e %d %e", i, 
+            println(outputFile, @sprintf("%d %e %e %e %e %e %e %e %e %e %d %e", i, 
             outputs[i,1], outputs[i,2], outputs[i,3], outputs[i,4], outputs[i,5], outputs[i,6], outputs[i,7], outputs[i,8], outputs[i,9], outputs[i,10], outputs[i,11]))
         end
     end
@@ -571,7 +572,7 @@ function main(args)
 
     nParticles = args["n"]
 
-    println("idx x y z xnext ynext znext vx vy vz collides time")
+    println(outputFile, "idx x y z xnext ynext znext vx vy vz collides time")
 
     # Define particle generation
     boltzmann = sqrt(kB*args["T"]/MASS_PARTICLE)
@@ -614,7 +615,7 @@ function main(args)
     return allstats
 end
 
-function runParticleTracing(geom, flow; n=10000, z=0.035, r=0.0, vz=0.0, vr=0.0, T=0.0, m=4.0, M=191.0, sigma=130E-20, omega=0.0, zmin=-Inf, zmax=Inf, pflip=0.0, saveall=0, stats=nothing, exitstats=nothing)
+function runParticleTracing(geom, flow; n=10000, z=0.035, r=0.0, vz=0.0, vr=0.0, T=0.0, m=4.0, M=191.0, sigma=130E-20, omega=0.0, zmin=-Inf, zmax=Inf, pflip=0.0, saveall=0, stats=nothing, exitstats=nothing, particlesoutput=stdout)
     
     # Set the arguments
     
@@ -637,14 +638,18 @@ function runParticleTracing(geom, flow; n=10000, z=0.035, r=0.0, vz=0.0, vr=0.0,
     args["stats"] = stats
     args["exitstats"] = exitstats
 
+    
+
     # Recalculate the constants
 
-    MASS_PARTICLE = args["M"] # AMU
-    MASS_BUFFER_GAS = args["m"] # AMU
-    MASS_REDUCED = MASS_PARTICLE * MASS_BUFFER_GAS /
+    global MASS_PARTICLE = args["M"] # AMU
+    global MASS_BUFFER_GAS = args["m"] # AMU
+    global MASS_REDUCED = MASS_PARTICLE * MASS_BUFFER_GAS /
         (MASS_PARTICLE + MASS_BUFFER_GAS) # AMU
-    kB = 8314.46 # AMU m^2 / (s^2 K)
-    σ_BUFFER_GAS_PARTICLE = args["sigma"] # m^2
+    global kB = 8314.46 # AMU m^2 / (s^2 K)
+    global σ_BUFFER_GAS_PARTICLE = args["sigma"] # m^2
+
+    global outputFile = particlesoutput == stdout ? stdout : open(particlesoutput, "w")
 
     allstats = main(args)
 

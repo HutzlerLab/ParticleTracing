@@ -33,6 +33,7 @@ The current version allows for simple simulation manipulation by running the `ru
 | `saveall` | Saves all particles if nonzero or just those that leave the cell if 0   | No  | 0  |
 | `stats`  | Filename to save average properties of trajectories  | No  | nothing  |
 | `exitstats`  | Filename to save average properties of trajectories where the particle hits the simulation boundary  | No  | nothing  |
+| `particlesoutput` | Filename to save the properties of each particle | No | `stdout` |
 
 ## Example
 
